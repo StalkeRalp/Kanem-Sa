@@ -4,33 +4,96 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 
 const bgImages = [
   { src: "/images/kanem_hero_bg.png",                                                    caption: "Pôle R&D & Laboratoires d'Innovation" },
   { src: "/images/home.png",                                                              caption: "Campus & Ancrage Institutionnel" },
-  { src: "/images/Images Attirance/pexels-mediahooch-14785826.jpg",                      caption: "Technologies Émergentes & Souveraineté" },
-  { src: "/images/Images Attirance/pexels-shvets-production-7562020.jpg",                caption: "Recherche Scientifique Appliquée" },
-  { src: "/images/Images Attirance/pexels-shvets-production-7562259.jpg",                caption: "Jeunesse & Programme RAIDE-RACE" },
+  { src: "/images/attirance/pexels-mediahooch-14785826.jpg",                      caption: "Technologies Émergentes & Souveraineté" },
+  { src: "/images/attirance/pexels-shvets-production-7562020.jpg",                caption: "Recherche Scientifique Appliquée" },
+  { src: "/images/attirance/pexels-shvets-production-7562259.jpg",                caption: "Jeunesse & Programme RAIDE-RACE" },
   { collage: true,                                                                        caption: "Galerie KANEM-SA — Tous nos domaines d'excellence" }
 ];
 
 const collageImages = [
   "/images/kanem_hero_bg.png",
   "/images/home.png",
-  "/images/Images Attirance/pexels-mediahooch-14785826.jpg",
-  "/images/Images Attirance/pexels-shvets-production-7562020.jpg",
-  "/images/Images Attirance/pexels-shvets-production-7562259.jpg",
-  "/images/Images Attirance/pexels-markus-winkler-1430818-18475692.jpg",
-  "/images/Images Attirance/pexels-fajuyi-samuel-olayinka-589022314-19330452.jpg",
-  "/images/Images Attirance/pexels-zeal-creative-studios-58866141-33920046.jpg",
-  "/images/Images Attirance/pexels-davdkuko-17792243.jpg"
+  "/images/attirance/pexels-mediahooch-14785826.jpg",
+  "/images/attirance/pexels-shvets-production-7562020.jpg",
+  "/images/attirance/pexels-shvets-production-7562259.jpg",
+  "/images/attirance/pexels-markus-winkler-1430818-18475692.jpg",
+  "/images/attirance/pexels-fajuyi-samuel-olayinka-589022314-19330452.jpg",
+  "/images/attirance/pexels-zeal-creative-studios-58866141-33920046.jpg",
+  "/images/attirance/pexels-davdkuko-17792243.jpg"
 ];
+
+// ── Cinematic Staggered Entrance Motion Variants ──
+const heroContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.16,
+      delayChildren: 0.15,
+    },
+  },
+};
+
+const tagVariants = {
+  hidden: { opacity: 0, y: -24, scale: 0.94 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+const titleVariants = {
+  hidden: { opacity: 0, y: 40, filter: "blur(8px)" },
+  visible: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 1.1, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+const mottoVariants = {
+  hidden: { opacity: 0, x: -35, y: 15 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
+const dotsVariants = {
+  hidden: { opacity: 0, scale: 0.8 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.7, ease: "easeOut" },
+  },
+};
+
+const ctaVariants = {
+  hidden: { opacity: 0, x: 45, y: 10 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] },
+  },
+};
 
 export default function HeroCarousel({ searchBar }) {
   const { t } = useLanguage();
   const [isClient, setIsClient] = useState(false);
   const [currentBg, setCurrentBg] = useState(0);
+  const [scrollY, setScrollY] = useState(0);
   const timerRef = useRef(null);
 
   const startTimer = () => {
@@ -43,8 +106,19 @@ export default function HeroCarousel({ searchBar }) {
   useEffect(() => {
     setIsClient(true);
     startTimer();
+
+    let animationFrameId;
+    const handleScroll = () => {
+      animationFrameId = requestAnimationFrame(() => {
+        setScrollY(window.scrollY);
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      window.removeEventListener("scroll", handleScroll);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
@@ -70,8 +144,14 @@ export default function HeroCarousel({ searchBar }) {
       className="relative overflow-hidden bg-black text-white border-b border-zinc-800"
       style={{ minHeight: "90vh", display: "flex", flexDirection: "column", justifyContent: "space-between" }}
     >
-      {/* ── Background Carousel Track ── */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
+      {/* ── Background Carousel Track with Subtly Accelerated Parallax ── */}
+      <div
+        className="absolute inset-0 z-0 overflow-hidden"
+        style={{
+          transform: `translateY(${Math.min(scrollY * 0.3, 180)}px) scale(1.05)`,
+          willChange: "transform"
+        }}
+      >
         {bgImages.map((img, idx) => {
           const tx = idx === currentBg ? "0%" : idx < currentBg ? "-100%" : "100%";
 
@@ -156,36 +236,41 @@ export default function HeroCarousel({ searchBar }) {
         <ChevronRight className="w-6 h-6 group-hover:translate-x-0.5 transition-transform" />
       </button>
 
-      {/* ── Main Content ── */}
-      <div className="relative z-20 flex-1 flex items-center w-full">
+      {/* ── Main Content with Framer Motion Staggered Parallax Entrance ── */}
+      <motion.div
+        className="relative z-20 flex-1 flex items-center w-full"
+        variants={heroContainerVariants}
+        initial="hidden"
+        animate="visible"
+      >
         <div className="grid grid-cols-1 lg:grid-cols-12 w-full items-center px-4 pt-20 pb-6">
 
           {/* LEFT: Text — clear padding so text is not hidden by left arrow */}
           <div className="lg:col-span-7 space-y-6" style={{ paddingLeft: "80px", paddingRight: "32px" }}>
 
-            {/* Tag */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-black text-amber-300 uppercase tracking-widest">
+            {/* Tag Badge */}
+            <motion.div variants={tagVariants} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-black text-amber-300 uppercase tracking-widest">
               <span className="w-2 h-2 rounded-full bg-[#C59B27] animate-pulse" />
               <span>{t.hero.tag}</span>
-            </div>
+            </motion.div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.05] drop-shadow-xl">
+            <motion.h1 variants={titleVariants} className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-[1.05] drop-shadow-xl">
               {t.hero.title}
-            </h1>
+            </motion.h1>
 
             {/* Motto */}
-            <div className="bg-black/70 backdrop-blur-md text-white py-4 px-5 border-l-4 border-[#C59B27] border border-white/10 shadow-2xl space-y-1.5 max-w-xl">
+            <motion.div variants={mottoVariants} className="bg-black/70 backdrop-blur-md text-white py-4 px-5 border-l-4 border-[#C59B27] border border-white/10 shadow-2xl space-y-1.5 max-w-xl">
               <p className="text-lg sm:text-xl font-bold italic text-amber-300 font-serif leading-snug">
                 {t.hero.subtitle}
               </p>
               <p className="text-xs sm:text-sm text-zinc-300 font-medium">
                 {t.hero.strategicMotto}
               </p>
-            </div>
+            </motion.div>
 
             {/* Dot Indicators */}
-            <div className="flex items-center gap-2 pt-2">
+            <motion.div variants={dotsVariants} className="flex items-center gap-2 pt-2">
               {bgImages.map((_, idx) => (
                 <button
                   key={idx}
@@ -204,7 +289,7 @@ export default function HeroCarousel({ searchBar }) {
                   aria-label={`Slide ${idx + 1}`}
                 />
               ))}
-            </div>
+            </motion.div>
 
           </div>
 
@@ -221,8 +306,8 @@ export default function HeroCarousel({ searchBar }) {
               />
             </div>
 
-            {/* CTAs — Shifted to the extreme right and lower down */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-end items-center w-full pr-2 sm:pr-8 pt-4 lg:pt-12">
+            {/* CTAs — Shifted to the extreme right and lower down with Staggered Motion */}
+            <motion.div variants={ctaVariants} className="flex flex-col sm:flex-row gap-4 justify-end items-center w-full pr-2 sm:pr-8 pt-4 lg:pt-12">
               <Link
                 href="/services"
                 className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-extrabold text-black bg-[#C59B27] hover:bg-amber-300 rounded-md shadow-2xl transition-all group"
@@ -237,11 +322,11 @@ export default function HeroCarousel({ searchBar }) {
                 {t.hero.ctaSecondary}
                 <ChevronRight className="w-4 h-4 text-[#C59B27]" />
               </Link>
-            </div>
+            </motion.div>
           </div>
 
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Search/Filter Bar ── */}
       <div className="relative z-20 w-full px-4 sm:px-6 lg:px-8 pb-0">

@@ -40,7 +40,7 @@ export default function RaideRacePage() {
         {/* Background Image Overlay */}
         <div className="absolute inset-0 opacity-30">
           <Image
-            src="/images/Images Attirance/pexels-shvets-production-7562020.jpg"
+            src="/images/attirance/pexels-shvets-production-7562020.jpg"
             alt="RAIDE-RACE Banner"
             fill
             className="object-cover"
@@ -223,7 +223,7 @@ export default function RaideRacePage() {
 
             <div className="relative h-96 rounded-2xl overflow-hidden border-2 border-black shadow-2xl">
               <Image
-                src="/images/Images Attirance/pexels-mediahooch-14785826.jpg"
+                src="/images/attirance/pexels-mediahooch-14785826.jpg"
                 alt="Students innovating"
                 fill
                 className="object-cover"

@@ -90,11 +90,73 @@ export const translations = {
       impact: "Partenaire Pilote : CENAME"
     },
     homeAboutTeaser: {
-      badge: "NOTRE HISTOIRE",
+      badge: "NOTRE HISTOIRE & SOUVERAINETÉ",
       title: "Inspirés par l'Héritage Kanem & Sao",
       desc: "Puissant symbole de gouvernance, de résilience et de savoir-faire ancestral, l'héritage des civilisations Kanem et Sao incarne notre détermination à bâtir des technologies africaines de rang mondial.",
       disclaimer: "Exigence institutionnelle : KANEM-SA n'implique aucune affiliation politique, ethnique ou religieuse.",
-      cta: "En savoir plus sur notre histoire"
+      cta: "En savoir plus sur notre histoire",
+      slides: [
+        {
+          id: "heritage",
+          badge: "PILIER 01 — HÉRITAGE HISTORIQUE",
+          title: "Savoir-Faire & Gouvernance Kanem-Sao",
+          subtitle: "Résilience, Maîtrise Technique & Transmission Ancestrale",
+          desc: "L'héritage scientifique et organisationnel des grands empires du Kanem et des Sao nous inspire une vision exigeante : transformer les traditions d'excellence en technologies souveraines du XXIe siècle.",
+          image: "/images/2.jpeg",
+          portraitAlt: "Héritage Kanem-Sao & Épée Sacrée",
+          isEmblem: false,
+          points: [
+            "Ingénierie et métallurgie ancestrales appliquées au monde moderne.",
+            "Transmission transgénérationnelle des hautes compétences académiques.",
+            "Symbole fort d'émancipation intellectuelle pour la jeunesse africaine."
+          ]
+        },
+        {
+          id: "sovereignty",
+          badge: "PILIER 02 — SOUVERAINETÉ R&D",
+          title: "Technologies & Algorithmes Souverains",
+          subtitle: "Indépendance Numérique, Cybersécurité et Matériels Autonomes",
+          desc: "Nous concevons des solutions logicielles et matérielles 100% maîtrisées sur le continent afin de protéger les données stratégiques et les infrastructures critiques de nos nations.",
+          image: "/images/1.jpeg",
+          portraitAlt: "Puissance & Protection des Savoirs",
+          isEmblem: false,
+          points: [
+            "Algorithmes de cryptographie et IA adaptés aux réalités africaines.",
+            "Protection, dépôt et valorisation de brevets continentaux.",
+            "Résilience renforcée des réseaux informatiques nationaux."
+          ]
+        },
+        {
+          id: "synergy",
+          badge: "PILIER 03 — SYNERGIE STRATÉGIQUE",
+          title: "Alliance Université — Entreprises — État",
+          subtitle: "Coopération Tripartite pour un Impact Industriel Concret",
+          desc: "KANEM-SA crée les ponts opérationnels entre le monde universitaire, les ministères publics et le secteur privé pour transformer la recherche théorique en emplois et produits à forte valeur.",
+          image: "/images/4.jpeg",
+          portraitAlt: "Excellence Scientifique & Leadership Moderne",
+          isEmblem: false,
+          points: [
+            "Déploiement de projets pilotes d'envergure (ex: CENAME en santé).",
+            "Incubation accélérée des meilleures pépites technologiques.",
+            "Rayonnement stratégique dans les 54 nations du continent."
+          ]
+        },
+        {
+          id: "ethics",
+          badge: "PILIER 04 — RIGUEUR & ÉTHIQUE",
+          title: "Neutralité Républicaine & Éthique Académique",
+          subtitle: "Rigueur Scientifique Strictement Indépendante",
+          desc: "Notre démarche est guidée par le sérieux académique et l'éthique républicaine. KANEM-SA est une institution neutre dédiée au bien commun, sans aucune considération d'ordre partisan.",
+          image: "/images/5.jpeg",
+          portraitAlt: "Identité, Sagesse & Masque Ancestral",
+          isEmblem: false,
+          points: [
+            "Absence totale d'affiliation politique, ethnique ou religieuse.",
+            "Validation stricte selon la méthode scientifique internationale.",
+            "Promotion inclusive de tous les talents du continent sans discrimination."
+          ]
+        }
+      ]
     },
     partners: {
       title: "COLLABORATIONS & PARTENAIRES STRATÉGIQUES",
@@ -293,11 +355,73 @@ export const translations = {
       impact: "Pilot Partner: CENAME"
     },
     homeAboutTeaser: {
-      badge: "OUR HERITAGE",
+      badge: "OUR HERITAGE & SOVEREIGNTY",
       title: "Inspired by the Kanem & Sao Heritage",
       desc: "A powerful symbol of governance, resilience, and ancestral mastery, the legacy of Kanem and Sao civilizations inspires our drive to build world-class African technologies.",
       disclaimer: "Institutional notice: KANEM-SA has no political, ethnic, or religious affiliation.",
-      cta: "Learn more about our history"
+      cta: "Learn more about our history",
+      slides: [
+        {
+          id: "heritage",
+          badge: "PILLAR 01 — HISTORICAL LEGACY",
+          title: "Kanem-Sao Governance & Mastery",
+          subtitle: "Resilience, Technical Mastery & Ancestral Transmission",
+          desc: "The scientific and organizational heritage of the Kanem and Sao empires inspires our demanding vision: transforming traditions of excellence into 21st-century sovereign technologies.",
+          image: "/images/2.jpeg",
+          portraitAlt: "Kanem-Sao Legacy & Sacred Sword",
+          isEmblem: false,
+          points: [
+            "Ancestral engineering and metallurgy applied to modern challenges.",
+            "Transgenerational transmission of top academic competencies.",
+            "A powerful symbol of intellectual empowerment for African youth."
+          ]
+        },
+        {
+          id: "sovereignty",
+          badge: "PILLAR 02 — R&D SOVEREIGNTY",
+          title: "Sovereign Technologies & Algorithms",
+          subtitle: "Digital Independence, Cybersecurity & Autonomous Systems",
+          desc: "We design software and hardware solutions 100% mastered on the continent to protect critical data and national infrastructure.",
+          image: "/images/1.jpeg",
+          portraitAlt: "Power & Knowledge Safeguarding",
+          isEmblem: false,
+          points: [
+            "Cryptography algorithms and AI tailored to African realities.",
+            "Filing, protection, and valorization of continental patents.",
+            "Reinforced resilience for national digital networks."
+          ]
+        },
+        {
+          id: "synergy",
+          badge: "PILLAR 03 — STRATEGIC SYNERGY",
+          title: "University — Industry — State Alliance",
+          subtitle: "Tripartite Cooperation for Direct Industrial Impact",
+          desc: "KANEM-SA builds operational bridges between academia, public ministries, and the private sector to turn theoretical research into high-value jobs and products.",
+          image: "/images/4.jpeg",
+          portraitAlt: "Scientific Excellence & Modern Leadership",
+          isEmblem: false,
+          points: [
+            "Deployment of major pilot programs (e.g. CENAME in healthcare).",
+            "Accelerated incubation for top continental tech champions.",
+            "Strategic outreach across all 54 nations of the continent."
+          ]
+        },
+        {
+          id: "ethics",
+          badge: "PILLAR 04 — RIGOR & ETHICS",
+          title: "Institutional Neutrality & Academic Ethics",
+          subtitle: "Strictly Independent Scientific Rigor",
+          desc: "Our methodology is driven by academic rigor and public ethics. KANEM-SA is a neutral institution dedicated to the common good with zero political stance.",
+          image: "/images/5.jpeg",
+          portraitAlt: "Identity, Wisdom & Ancestral Mask",
+          isEmblem: false,
+          points: [
+            "Strictly zero political, ethnic, or religious affiliation.",
+            "Strict validation following international scientific standards.",
+            "Inclusive empowerment of all talents across the continent."
+          ]
+        }
+      ]
     },
     partners: {
       title: "COLLABORATIONS & STRATEGIC PARTNERS",

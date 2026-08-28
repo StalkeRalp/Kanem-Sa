@@ -46,7 +46,7 @@ export default function AboutPage() {
       <section className="bg-zinc-950 text-white py-20 border-b border-zinc-800 relative overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <Image
-            src="/images/Images Attirance/pexels-fajuyi-samuel-olayinka-589022314-19330452.jpg"
+            src="/images/attirance/pexels-fajuyi-samuel-olayinka-589022314-19330452.jpg"
             alt="About Background"
             fill
             className="object-cover"

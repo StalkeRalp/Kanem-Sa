@@ -4,27 +4,156 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import HeroCarousel from "@/components/HeroCarousel";
+import Reveal from "@/components/Reveal";
+import DomainScrubbingCarousel from "@/components/DomainScrubbingCarousel";
 import { useLanguage } from "@/context/LanguageContext";
 import {
   Cpu, Shield, Wheat, HeartPulse, Coins, Zap,
   ArrowRight, ChevronLeft, ChevronRight, Sparkles, Award, Globe2,
   Users, Search, CheckCircle2, Building2, BookOpen,
-  ArrowUpRight, TrendingUp, Layers
+  ArrowUpRight, TrendingUp, Layers, Quote
 } from "lucide-react";
+
+// Interactive Fluid Metaball Background Component (Dior/Gucci Luxury Style)
+function MetaballBackground() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let animationFrameId;
+
+    let width = (canvas.width = canvas.parentElement.offsetWidth);
+    let height = (canvas.height = canvas.parentElement.offsetHeight);
+
+    const handleResize = () => {
+      if (!canvas.parentElement) return;
+      width = canvas.width = canvas.parentElement.offsetWidth;
+      height = canvas.height = canvas.parentElement.offsetHeight;
+    };
+    window.addEventListener("resize", handleResize);
+
+    // Smooth lag spring physics for cursor position
+    let targetMouseX = width / 2;
+    let targetMouseY = height / 2;
+    let mouseX = width / 2;
+    let mouseY = height / 2;
+
+    const handleMouseMove = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      targetMouseX = e.clientX - rect.left;
+      targetMouseY = e.clientY - rect.top;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+
+    // Organic fluid blobs
+    const blobs = [
+      { x: width * 0.2, y: height * 0.3, vx: 0.35, vy: 0.25, radius: 150, baseRadius: 150 },
+      { x: width * 0.8, y: height * 0.4, vx: -0.3, vy: 0.35, radius: 170, baseRadius: 170 },
+      { x: width * 0.5, y: height * 0.7, vx: 0.25, vy: -0.3, radius: 190, baseRadius: 190 },
+      { x: width * 0.3, y: height * 0.85, vx: -0.35, vy: -0.2, radius: 130, baseRadius: 130 },
+      { x: width * 0.7, y: height * 0.15, vx: 0.3, vy: 0.2, radius: 140, baseRadius: 140 },
+      // Interactive mouse-following blob that splits & lags
+      { x: mouseX, y: mouseY, vx: 0, vy: 0, radius: 160, baseRadius: 160 }
+    ];
+
+    let time = 0;
+
+    const render = () => {
+      time += 0.015;
+
+      // Spring lag interpolation for mouse follower
+      mouseX += (targetMouseX - mouseX) * 0.045;
+      mouseY += (targetMouseY - mouseY) * 0.045;
+
+      blobs[5].x = mouseX;
+      blobs[5].y = mouseY;
+
+      ctx.clearRect(0, 0, width, height);
+
+      // Move autonomous blobs slowly & float
+      blobs.slice(0, 5).forEach((b, i) => {
+        b.x += b.vx + Math.sin(time + i) * 0.35;
+        b.y += b.vy + Math.cos(time + i * 0.7) * 0.35;
+
+        if (b.x < -120) b.x = width + 120;
+        if (b.x > width + 120) b.x = -120;
+        if (b.y < -120) b.y = height + 120;
+        if (b.y > height + 120) b.y = -120;
+      });
+
+      // Render luxurious champagne & gold organic radial gradients
+      blobs.forEach((b, idx) => {
+        const rad = b.baseRadius + Math.sin(time * 2 + idx) * 16;
+        const grad = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, rad);
+
+        if (idx === 5) {
+          // Interactive cursor blob
+          grad.addColorStop(0, "rgba(197, 155, 39, 0.18)");
+          grad.addColorStop(0.5, "rgba(245, 239, 230, 0.25)");
+          grad.addColorStop(1, "rgba(250, 250, 250, 0)");
+        } else if (idx % 2 === 0) {
+          grad.addColorStop(0, "rgba(240, 232, 218, 0.35)");
+          grad.addColorStop(0.6, "rgba(249, 246, 240, 0.2)");
+          grad.addColorStop(1, "rgba(250, 250, 250, 0)");
+        } else {
+          grad.addColorStop(0, "rgba(197, 155, 39, 0.12)");
+          grad.addColorStop(0.5, "rgba(234, 219, 200, 0.22)");
+          grad.addColorStop(1, "rgba(250, 250, 250, 0)");
+        }
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, rad, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 pointer-events-none z-0 w-full h-full"
+    />
+  );
+}
 
 export default function Home() {
   const { lang, t } = useLanguage();
   const [isClient, setIsClient] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [activeHeritageSlide, setActiveHeritageSlide] = useState(0);
   const domainsScrollRef = useRef(null);
 
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
+  const heritageSlides = t.homeAboutTeaser?.slides || [];
+
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (!heritageSlides || heritageSlides.length === 0) return;
+    const timer = setInterval(() => {
+      setActiveHeritageSlide((prev) => (prev + 1) % heritageSlides.length);
+    }, 7000);
+    return () => clearInterval(timer);
+  }, [heritageSlides.length]);
 
   const checkScrollState = () => {
     const el = domainsScrollRef.current;
@@ -58,23 +187,13 @@ export default function Home() {
     setTimeout(checkScrollState, 350);
   };
 
-
-  const iconsMap = {
-    Cpu: <Cpu className="w-7 h-7 text-black group-hover:text-[#C59B27] transition-colors" />,
-    Shield: <Shield className="w-7 h-7 text-black group-hover:text-[#C59B27] transition-colors" />,
-    Wheat: <Wheat className="w-7 h-7 text-black group-hover:text-[#C59B27] transition-colors" />,
-    HeartPulse: <HeartPulse className="w-7 h-7 text-black group-hover:text-[#C59B27] transition-colors" />,
-    Coins: <Coins className="w-7 h-7 text-black group-hover:text-[#C59B27] transition-colors" />,
-    Zap: <Zap className="w-7 h-7 text-black group-hover:text-[#C59B27] transition-colors" />
-  };
-
   const domainImages = [
-    "/images/Images Attirance/pexels-mediahooch-14785826.jpg",
-    "/images/Images Attirance/pexels-shvets-production-7562020.jpg",
-    "/images/Images Attirance/pexels-markus-winkler-1430818-18475692.jpg",
-    "/images/Images Attirance/pexels-fajuyi-samuel-olayinka-589022314-19330452.jpg",
-    "/images/Images Attirance/pexels-zeal-creative-studios-58866141-33920046.jpg",
-    "/images/Images Attirance/pexels-davdkuko-17792243.jpg"
+    "/images/attirance/pexels-mediahooch-14785826.jpg",
+    "/images/attirance/pexels-shvets-production-7562020.jpg",
+    "/images/attirance/pexels-markus-winkler-1430818-18475692.jpg",
+    "/images/attirance/pexels-fajuyi-samuel-olayinka-589022314-19330452.jpg",
+    "/images/attirance/pexels-zeal-creative-studios-58866141-33920046.jpg",
+    "/images/attirance/pexels-davdkuko-17792243.jpg"
   ];
 
   const filteredDomains = t.homeDomains.items.filter((item) => {
@@ -84,21 +203,21 @@ export default function Home() {
   });
 
   return (
-    <div className="bg-white min-h-screen text-zinc-900">
+    <div className="bg-white min-h-screen text-zinc-900 overflow-x-hidden">
       {/* ---------------------------------------------------- */}
-      {/* 1. HERO — Deterministic rendering for SSR and Client */}
+      {/* 1. HERO — Parallax Carousel & Interactive Search */}
       {/* ---------------------------------------------------- */}
       <HeroCarousel
         searchBar={
-          <div className="bg-white p-4 sm:p-5 border-2 border-black shadow-2xl text-zinc-900">
+          <div className="bg-white p-4 sm:p-5 border-2 border-black shadow-2xl text-zinc-900 rounded-sm">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
               {/* Filter 1: Domaine */}
-              <div className="flex items-center gap-2 px-3 py-2.5 bg-zinc-50 border border-zinc-300 rounded-md">
+              <div className="flex items-center gap-2 px-3 py-2.5 bg-zinc-50 border border-zinc-300 rounded-md focus-within:border-black transition-colors">
                 <Layers className="w-4 h-4 text-[#C59B27] shrink-0" />
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full text-xs font-semibold bg-transparent focus:outline-none text-zinc-800"
+                  className="w-full text-xs font-semibold bg-transparent focus:outline-none text-zinc-800 cursor-pointer"
                 >
                   <option value="all">{t.hero.filterCategory}</option>
                   <option value="tech">Technologies Émergentes</option>
@@ -114,7 +233,7 @@ export default function Home() {
               </div>
 
               {/* Filter 3: Search */}
-              <div className="flex items-center gap-2 px-3 py-2.5 bg-zinc-50 border border-zinc-300 rounded-md">
+              <div className="flex items-center gap-2 px-3 py-2.5 bg-zinc-50 border border-zinc-300 rounded-md focus-within:border-black transition-colors">
                 <Search className="w-4 h-4 text-zinc-400 shrink-0" />
                 <input
                   type="text"
@@ -131,7 +250,7 @@ export default function Home() {
                   const el = document.getElementById("featured-domains");
                   if (el) el.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="w-full py-2.5 px-4 text-xs font-bold text-white bg-black hover:bg-zinc-800 rounded-md transition-colors flex items-center justify-center gap-2 shadow"
+                className="w-full py-2.5 px-4 text-xs font-bold text-white bg-black hover:bg-zinc-800 rounded-md transition-all flex items-center justify-center gap-2 shadow shimmer-btn hover:scale-[1.02]"
               >
                 <span>{t.hero.searchButton}</span>
                 <ArrowUpRight className="w-4 h-4 text-[#C59B27]" />
@@ -142,86 +261,117 @@ export default function Home() {
       />
 
       {/* ---------------------------------------------------- */}
-      {/* 2. VISION & CHIFFRES CLÉS (4 PILLARS CARDS FULL WIDTH) */}
+      {/* 2. VISION & CHIFFRES CLÉS (DIOR/GUCCI LUXURY STYLE WITH COMPLEMENTARY PALETTE) */}
       {/* ---------------------------------------------------- */}
-      <section className="py-16 bg-zinc-50 border-b border-zinc-200 w-full">
-        <div className="w-full px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
-            <span className="text-xs font-black uppercase tracking-widest text-[#C59B27]">
-              {t.stats.pillarsTitle}
-            </span>
-            <h2 className="text-3xl font-extrabold text-black tracking-tight">
-              L'Excellence au Service du Développement
-            </h2>
-            <p className="text-sm text-zinc-600">
-              {t.stats.pillarsSubtitle}
-            </p>
-          </div>
+      <section className="py-28 bg-[#FAFAFA] border-b border-zinc-200 w-full relative overflow-hidden">
+        {/* Interactive Fluid Metaball Background */}
+        <MetaballBackground />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full justify-between">
-            {/* Card 1 */}
-            <div className="bg-white p-6 rounded-lg border border-zinc-200 hover:border-black transition-all hover:shadow-lg group w-full">
-              <div className="w-12 h-12 bg-black rounded-md flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                <Sparkles className="w-6 h-6 text-[#C59B27]" />
-              </div>
-              <div className="text-3xl font-black text-black mb-1">
-                {t.stats.p1.count}
-              </div>
-              <h3 className="text-base font-bold text-zinc-900 mb-2">
-                {t.stats.p1.title}
-              </h3>
-              <p className="text-xs text-zinc-500 leading-relaxed">
-                {t.stats.p1.desc}
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          
+          {/* Header */}
+          <Reveal variant="up">
+            <div className="text-center max-w-3xl mx-auto space-y-4 mb-20">
+              {/* Badge in Imperial Navy + Champagne Gold */}
+              <span className="text-[10px] font-mono tracking-[0.3em] uppercase font-bold text-[#E5C158] bg-[#0F1D38] border border-[#1E3A8A] px-4 py-1.5 rounded-full inline-block shadow-md">
+                {t.stats.pillarsTitle}
+              </span>
+              
+              {/* Main Title in Luxury Serif */}
+              <h2 className="text-3xl sm:text-5xl font-serif font-normal text-zinc-900 tracking-tight leading-tight">
+                L'Excellence au Service du Développement
+              </h2>
+              
+              {/* Subtitle */}
+              <p className="text-sm sm:text-base text-zinc-500 font-light max-w-xl mx-auto leading-relaxed">
+                {t.stats.pillarsSubtitle}
               </p>
             </div>
+          </Reveal>
+
+          {/* 4 Floating Cards Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 w-full justify-between">
+            
+            {/* Card 1 */}
+            <Reveal variant="up" delay={0} className="w-full">
+              <div className="bg-white/95 backdrop-blur-md p-8 sm:p-10 rounded-2xl border border-zinc-100/90 shadow-[0_15px_35px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_50px_rgba(197,155,39,0.18)] transition-all duration-700 group w-full h-full flex flex-col justify-between hover:-translate-y-2 cursor-pointer">
+                <div>
+                  <div className="w-14 h-14 rounded-full border border-[#D4AF37]/50 bg-gradient-to-br from-[#FAF5E8] to-[#F5EFE6] flex items-center justify-center mb-7 group-hover:scale-110 group-hover:bg-[#C59B27] transition-all duration-500 shadow-xs">
+                    <Sparkles className="w-6 h-6 text-[#C59B27] group-hover:text-white transition-colors duration-300 stroke-[1.5]" />
+                  </div>
+                  <div className="text-4xl sm:text-5xl font-serif font-bold text-zinc-900 mb-3 tracking-tight group-hover:text-[#C59B27] group-hover:scale-[1.03] origin-left transition-all duration-500">
+                    {t.stats.p1.count}
+                  </div>
+                  <h3 className="text-base font-semibold text-zinc-900 mb-2 tracking-wide">
+                    {t.stats.p1.title}
+                  </h3>
+                </div>
+                <p className="text-xs text-zinc-500 font-light leading-relaxed mt-4">
+                  {t.stats.p1.desc}
+                </p>
+              </div>
+            </Reveal>
 
             {/* Card 2 */}
-            <div className="bg-white p-6 rounded-lg border border-zinc-200 hover:border-black transition-all hover:shadow-lg group w-full">
-              <div className="w-12 h-12 bg-black rounded-md flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                <Shield className="w-6 h-6 text-[#C59B27]" />
+            <Reveal variant="up" delay={120} className="w-full">
+              <div className="bg-white/95 backdrop-blur-md p-8 sm:p-10 rounded-2xl border border-zinc-100/90 shadow-[0_15px_35px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_50px_rgba(13,59,46,0.18)] transition-all duration-700 group w-full h-full flex flex-col justify-between hover:-translate-y-2 cursor-pointer">
+                <div>
+                  <div className="w-14 h-14 rounded-full border border-[#0D3B2E]/30 bg-[#F0F7F4] flex items-center justify-center mb-7 group-hover:scale-110 group-hover:bg-[#0D3B2E] transition-all duration-500 shadow-xs">
+                    <Shield className="w-6 h-6 text-[#0D3B2E] group-hover:text-white transition-colors duration-300 stroke-[1.5]" />
+                  </div>
+                  <div className="text-4xl sm:text-5xl font-serif font-bold text-zinc-900 mb-3 tracking-tight group-hover:text-[#0D3B2E] group-hover:scale-[1.03] origin-left transition-all duration-500">
+                    {t.stats.p2.count}
+                  </div>
+                  <h3 className="text-base font-semibold text-zinc-900 mb-2 tracking-wide">
+                    {t.stats.p2.title}
+                  </h3>
+                </div>
+                <p className="text-xs text-zinc-500 font-light leading-relaxed mt-4">
+                  {t.stats.p2.desc}
+                </p>
               </div>
-              <div className="text-3xl font-black text-black mb-1">
-                {t.stats.p2.count}
-              </div>
-              <h3 className="text-base font-bold text-zinc-900 mb-2">
-                {t.stats.p2.title}
-              </h3>
-              <p className="text-xs text-zinc-500 leading-relaxed">
-                {t.stats.p2.desc}
-              </p>
-            </div>
+            </Reveal>
 
             {/* Card 3 */}
-            <div className="bg-white p-6 rounded-lg border border-zinc-200 hover:border-black transition-all hover:shadow-lg group w-full">
-              <div className="w-12 h-12 bg-black rounded-md flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                <Globe2 className="w-6 h-6 text-[#C59B27]" />
+            <Reveal variant="up" delay={240} className="w-full">
+              <div className="bg-white/95 backdrop-blur-md p-8 sm:p-10 rounded-2xl border border-zinc-100/90 shadow-[0_15px_35px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_50px_rgba(15,29,56,0.18)] transition-all duration-700 group w-full h-full flex flex-col justify-between hover:-translate-y-2 cursor-pointer">
+                <div>
+                  <div className="w-14 h-14 rounded-full border border-[#1E3A8A]/30 bg-[#F0F4FA] flex items-center justify-center mb-7 group-hover:scale-110 group-hover:bg-[#0F1D38] transition-all duration-500 shadow-xs">
+                    <Globe2 className="w-6 h-6 text-[#0F1D38] group-hover:text-white transition-colors duration-300 stroke-[1.5]" />
+                  </div>
+                  <div className="text-4xl sm:text-5xl font-serif font-bold text-zinc-900 mb-3 tracking-tight group-hover:text-[#0F1D38] group-hover:scale-[1.03] origin-left transition-all duration-500">
+                    {t.stats.p3.count}
+                  </div>
+                  <h3 className="text-base font-semibold text-zinc-900 mb-2 tracking-wide">
+                    {t.stats.p3.title}
+                  </h3>
+                </div>
+                <p className="text-xs text-zinc-500 font-light leading-relaxed mt-4">
+                  {t.stats.p3.desc}
+                </p>
               </div>
-              <div className="text-3xl font-black text-black mb-1">
-                {t.stats.p3.count}
-              </div>
-              <h3 className="text-base font-bold text-zinc-900 mb-2">
-                {t.stats.p3.title}
-              </h3>
-              <p className="text-xs text-zinc-500 leading-relaxed">
-                {t.stats.p3.desc}
-              </p>
-            </div>
+            </Reveal>
 
             {/* Card 4 */}
-            <div className="bg-white p-6 rounded-lg border border-zinc-200 hover:border-black transition-all hover:shadow-lg group w-full">
-              <div className="w-12 h-12 bg-black rounded-md flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
-                <Award className="w-6 h-6 text-[#C59B27]" />
+            <Reveal variant="up" delay={360} className="w-full">
+              <div className="bg-white/95 backdrop-blur-md p-8 sm:p-10 rounded-2xl border border-zinc-100/90 shadow-[0_15px_35px_rgba(0,0,0,0.03)] hover:shadow-[0_25px_50px_rgba(128,0,0,0.18)] transition-all duration-700 group w-full h-full flex flex-col justify-between hover:-translate-y-2 cursor-pointer">
+                <div>
+                  <div className="w-14 h-14 rounded-full border border-[#800000]/30 bg-[#FAF0F0] flex items-center justify-center mb-7 group-hover:scale-110 group-hover:bg-[#800000] transition-all duration-500 shadow-xs">
+                    <Award className="w-6 h-6 text-[#800000] group-hover:text-white transition-colors duration-300 stroke-[1.5]" />
+                  </div>
+                  <div className="text-4xl sm:text-5xl font-serif font-bold text-zinc-900 mb-3 tracking-tight group-hover:text-[#800000] group-hover:scale-[1.03] origin-left transition-all duration-500">
+                    {t.stats.p4.count}
+                  </div>
+                  <h3 className="text-base font-semibold text-zinc-900 mb-2 tracking-wide">
+                    {t.stats.p4.title}
+                  </h3>
+                </div>
+                <p className="text-xs text-zinc-500 font-light leading-relaxed mt-4">
+                  {t.stats.p4.desc}
+                </p>
               </div>
-              <div className="text-3xl font-black text-black mb-1">
-                {t.stats.p4.count}
-              </div>
-              <h3 className="text-base font-bold text-zinc-900 mb-2">
-                {t.stats.p4.title}
-              </h3>
-              <p className="text-xs text-zinc-500 leading-relaxed">
-                {t.stats.p4.desc}
-              </p>
-            </div>
+            </Reveal>
+
           </div>
         </div>
       </section>
@@ -229,452 +379,330 @@ export default function Home() {
       {/* ---------------------------------------------------- */}
       {/* 3. DOMAINES DE POINTE (FULL WIDTH EDGE-TO-EDGE CAROUSEL) */}
       {/* ---------------------------------------------------- */}
-      <section id="featured-domains" className="py-20 bg-white border-b border-zinc-200 w-full overflow-hidden">
+      <section id="featured-domains" className="py-24 bg-white border-b border-zinc-200 w-full overflow-hidden">
         <div className="w-full px-3 sm:px-6 lg:px-8">
           
           {/* Section Header */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-            <div>
-              <h2 className="text-4xl sm:text-5xl font-black text-black tracking-tight">
-                {t.homeDomains.title}
-              </h2>
-              <p className="text-base sm:text-lg text-zinc-500 font-medium max-w-2xl mt-3">
-                {t.homeDomains.subtitle}
-              </p>
+          <Reveal variant="up">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+              <div>
+                <span className="text-xs font-black uppercase tracking-widest text-[#C59B27] bg-[#C59B27]/10 px-3 py-1 rounded-full inline-block mb-3">
+                  {t.homeDomains.badge}
+                </span>
+                <h2 className="text-4xl sm:text-5xl font-black text-black tracking-tight">
+                  {t.homeDomains.title}
+                </h2>
+                <p className="text-base sm:text-lg text-zinc-500 font-medium max-w-2xl mt-3">
+                  {t.homeDomains.subtitle}
+                </p>
+              </div>
+
+              {/* View All Button */}
+              <Link
+                href="/services"
+                style={{ backgroundColor: "#800000" }}
+                className="inline-flex items-center gap-2 px-7 py-3.5 text-white rounded-sm text-xs sm:text-sm font-extrabold uppercase tracking-wider hover:opacity-90 transition-all shadow-md shimmer-btn hover:scale-105 shrink-0"
+              >
+                <span>{t.homeDomains.viewAll}</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
             </div>
+          </Reveal>
 
-            {/* View All Button */}
-            <Link
-              href="/services"
-              style={{ backgroundColor: "#800000" }}
-              className="inline-flex items-center gap-2 px-7 py-3.5 text-white rounded-sm text-xs sm:text-sm font-extrabold uppercase tracking-wider hover:opacity-90 transition-all shadow-md group shrink-0"
-            >
-              <span>{t.homeDomains.viewAll}</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          {/* Carousel Relative Wrapper containing Left/Right floating Arrows */}
-          <div className="relative w-full">
-            
-            {/* Left Floating Nav Arrow */}
-            <button
-              type="button"
-              onClick={() => scrollDomains("left")}
-              aria-label="Défiler à gauche"
-              style={
-                isClient
-                  ? {
-                      backgroundColor: "#000000",
-                      opacity: canScrollLeft ? 1 : 0.3,
-                      pointerEvents: canScrollLeft ? "auto" : "none",
-                      zIndex: 50
-                    }
-                  : {
-                      backgroundColor: "#000000",
-                      opacity: 0.3,
-                      pointerEvents: "none",
-                      zIndex: 50
-                    }
-              }
-              className="absolute left-2 top-[170px] -translate-y-1/2 w-12 h-12 text-white hover:bg-[#800000] hover:scale-110 transition-all flex items-center justify-center shadow-2xl rounded-full border-2 border-white cursor-pointer"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-
-            {/* Right Floating Nav Arrow */}
-            <button
-              type="button"
-              onClick={() => scrollDomains("right")}
-              aria-label="Défiler à droite"
-              style={
-                isClient
-                  ? {
-                      backgroundColor: "#000000",
-                      opacity: canScrollRight ? 1 : 0.3,
-                      pointerEvents: canScrollRight ? "auto" : "none",
-                      zIndex: 50
-                    }
-                  : {
-                      backgroundColor: "#000000",
-                      opacity: 1,
-                      pointerEvents: "auto",
-                      zIndex: 50
-                    }
-              }
-              className="absolute right-2 top-[170px] -translate-y-1/2 w-12 h-12 text-white hover:bg-[#800000] hover:scale-110 transition-all flex items-center justify-center shadow-2xl rounded-full border-2 border-white cursor-pointer"
-            >
-              <ChevronRight className="w-6 h-6" />
-            </button>
-
-            {/* Horizontal Scroll Track (Full-Width Distribution) */}
-            <div
-              ref={domainsScrollRef}
-              className="flex gap-6 sm:gap-8 overflow-x-auto scrollbar-none snap-x snap-proximity pb-8 pt-2 w-full justify-between"
-              style={{ scrollBehavior: "smooth" }}
-            >
-              {filteredDomains.map((domain, index) => {
-                const badges = ["IA & SOUVERAINETÉ", "CYBERSÉCURITÉ", "AGRI-TECH", "HEALTH-TECH", "FINTECH", "SMART GRID"];
-                const dates = ["March 18, 2026", "June 10, 2026", "January 23, 2026", "July 26, 2026", "August 12, 2026", "September 04, 2026"];
-
-                return (
-                  <div
-                    key={domain.id}
-                    className="snap-start flex flex-col justify-between group cursor-pointer flex-shrink-0 w-[340px] sm:w-[380px]"
-                  >
-                    {/* Top Image Container — Taller Height (340px) */}
-                    <div
-                      style={{
-                        position: "relative",
-                        height: "340px",
-                        width: "100%",
-                        backgroundColor: "#18181b",
-                        overflow: "hidden"
-                      }}
-                    >
-                      <Image
-                        src={domainImages[index % domainImages.length]}
-                        alt={domain.title}
-                        fill
-                        sizes="380px"
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-
-                      {/* Reference Badge (White rectangular box at bottom-left) */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          bottom: 0,
-                          left: 0,
-                          backgroundColor: "#ffffff",
-                          color: "#000000",
-                          padding: "8px 16px",
-                          fontSize: "11px",
-                          fontWeight: "800",
-                          letterSpacing: "0.06em",
-                          textTransform: "uppercase",
-                          zIndex: 10,
-                          borderTop: "1px solid #e4e4e7",
-                          borderRight: "1px solid #e4e4e7"
-                        }}
-                      >
-                        {badges[index % badges.length]}
-                      </div>
-                    </div>
-
-                    {/* Card Content Below Image */}
-                    <div className="pt-4 flex-grow flex flex-col justify-between space-y-2">
-                      <div>
-                        {/* Date / Category */}
-                        <p className="text-xs sm:text-sm text-zinc-400 font-bold tracking-wider uppercase mb-1.5 font-mono">
-                          {dates[index % dates.length]}
-                        </p>
-
-                        {/* Title */}
-                        <h3 className="text-xl sm:text-2xl font-bold text-black group-hover:text-[#800000] transition-colors leading-tight line-clamp-2">
-                          {domain.title}
-                        </h3>
-
-                        {/* Description */}
-                        <p className="text-sm text-zinc-600 leading-relaxed mt-2.5 line-clamp-3 font-normal">
-                          {domain.desc}
-                        </p>
-                      </div>
-
-                      {/* Bottom "En savoir plus →" Link */}
-                      <div className="pt-4">
-                        <Link
-                          href="/services"
-                          className="inline-flex items-center gap-2 text-sm font-bold text-black group-hover:text-[#800000] underline underline-offset-4 transition-colors"
-                        >
-                          <span>En savoir plus</span>
-                          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-          </div>
+          {/* High-Fidelity Scroll-Scrubbing Carousel with Dynamic Depth & Interactive Pagination */}
+          <DomainScrubbingCarousel domains={filteredDomains} domainImages={domainImages} />
 
         </div>
       </section>
 
       {/* ---------------------------------------------------- */}
-      {/* 4. PROGRAMME PHARE: RAIDE-RACE SPOTLIGHT (HAUTE COUTURE EDITORIAL) */}
+      {/* 4. PROGRAMME PHARE: RAIDE-RACE SPOTLIGHT (50/50 LUXURY EDITORIAL) */}
       {/* ---------------------------------------------------- */}
-      <section
-        style={{ backgroundColor: "#0d0d0d", color: "#ffffff" }}
-        className="py-28 text-white relative overflow-hidden border-y border-zinc-800"
-      >
-        
-        {/* Subtle Luxury Hairline Grid Lines in Background */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none flex justify-between max-w-7xl mx-auto px-6">
-          <div className="w-[1px] h-full bg-gradient-to-b from-transparent via-[#C59B27]/40 to-transparent" />
-          <div className="w-[1px] h-full bg-gradient-to-b from-transparent via-white/10 to-transparent hidden sm:block" />
-          <div className="w-[1px] h-full bg-gradient-to-b from-transparent via-white/10 to-transparent hidden lg:block" />
-          <div className="w-[1px] h-full bg-gradient-to-b from-transparent via-[#C59B27]/40 to-transparent" />
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 relative z-10">
+      <section className="w-full bg-[#0a0a0a] text-white border-y border-zinc-900 overflow-hidden relative">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-12 min-h-[650px] lg:min-h-[720px] items-stretch">
           
-          {/* Top Editorial Subheader / Category Header */}
-          <div className="flex items-center justify-between border-b border-zinc-800 pb-6 mb-16">
-            <div className="flex items-center gap-4">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#C59B27] animate-pulse shadow-[0_0_10px_#C59B27]" />
-              <span className="text-xs font-mono tracking-[0.3em] uppercase text-zinc-400 font-medium">
-                HAUTE INNOVATION PANAFRICAINE
-              </span>
-            </div>
-            <span className="text-xs font-mono tracking-[0.25em] text-[#C59B27] uppercase font-bold px-3 py-1 bg-[#C59B27]/10 border border-[#C59B27]/30 rounded">
-              ÉDITION 2027
-            </span>
-          </div>
+          {/* Left Half: Full-Bleed 100% Height Image (No rounded corners, edge-to-edge) */}
+          <Reveal variant="left" delay={100} className="lg:col-span-6 w-full relative min-h-[450px] lg:min-h-[720px] h-full">
+            <div className="relative w-full h-full min-h-[450px] lg:min-h-[720px] overflow-hidden group">
+              <Image
+                src="/images/attirance/pexels-shvets-production-7562259.jpg"
+                alt="RAIDE-RACE 2027 High Art"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-1000 ease-out filter contrast-[1.08] brightness-[0.9]"
+                priority
+              />
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-            
-            {/* Left High-Fashion Main Image Showcase (Editorial Portrait Framing) */}
-            <div className="lg:col-span-5 relative group">
-              <div className="relative w-full h-[480px] sm:h-[540px] overflow-hidden border-2 border-zinc-800 hover:border-[#C59B27] transition-colors duration-700 bg-[#161616] rounded-sm shadow-2xl">
-                <Image
-                  src={encodeURI("/images/Images Attirance/pexels-shvets-production-7562259.jpg")}
-                  alt="RAIDE-RACE 2027 High Art"
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 45vw"
-                  className="object-cover group-hover:scale-110 transition-transform duration-1000 ease-out filter contrast-[1.1] brightness-[0.9]"
-                />
+              {/* Dior/Gucci Style Gradient Vignette */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
 
-                {/* Editorial Vignette & Hairline Inner Frame */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                <div className="absolute inset-4 border border-white/15 pointer-events-none group-hover:border-[#C59B27]/40 transition-colors duration-700" />
-
-                {/* Minimalist Emblem Overlay at Top Left */}
-                <div className="absolute top-6 left-6 flex items-center gap-3 bg-black/85 backdrop-blur-md px-4 py-2 border border-zinc-800 shadow-xl rounded-sm">
-                  <div className="w-7 h-7 relative">
-                    <Image
-                      src="/images/raidderacee-emblem.png"
-                      alt="Emblem"
-                      fill
-                      sizes="28px"
-                      className="object-contain"
-                    />
-                  </div>
-                  <span className="text-[10px] font-mono tracking-[0.25em] text-white uppercase font-bold">
-                    KANEM-SA
-                  </span>
+              {/* Minimalist Emblem Overlay at Top Left */}
+              <div className="absolute top-8 left-8 flex items-center gap-3 bg-black/85 backdrop-blur-md px-4 py-2 border border-zinc-800 shadow-xl rounded-none z-10">
+                <div className="w-6 h-6 relative">
+                  <Image
+                    src="/images/raidderacee-emblem.png"
+                    alt="Emblem"
+                    fill
+                    sizes="24px"
+                    className="object-contain"
+                  />
                 </div>
+                <span className="text-[10px] font-mono tracking-[0.25em] text-white uppercase font-bold">
+                  KANEM-SA
+                </span>
+              </div>
 
-                {/* Image Bottom Editorial Legend */}
-                <div className="absolute bottom-8 left-8 right-8 space-y-1">
-                  <span className="text-[11px] font-mono text-[#C59B27] tracking-[0.25em] uppercase block font-bold">
-                    BOOTCAMPS & COMPÉTITIONS
-                  </span>
-                  <h3 className="text-2xl font-serif text-white tracking-wide leading-tight group-hover:text-amber-200 transition-colors">
-                    L'Excellence Technologique
-                  </h3>
-                </div>
+              {/* Image Bottom Editorial Legend */}
+              <div className="absolute bottom-10 left-10 right-10 space-y-1.5 z-10">
+                <span className="text-[11px] font-mono text-[#C59B27] tracking-[0.25em] uppercase block font-bold">
+                  BOOTCAMPS & COMPÉTITIONS
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-serif text-white tracking-wide leading-tight">
+                  L'Excellence Technologique
+                </h3>
               </div>
             </div>
+          </Reveal>
 
-            {/* Right Editorial Typography Column */}
-            <div className="lg:col-span-7 space-y-8 pl-0 lg:pl-4">
+          {/* Right Half: Haute-Couture Spacious Editorial Column */}
+          <Reveal variant="right" delay={200} className="lg:col-span-6 w-full flex flex-col justify-center">
+            <div className="px-8 sm:px-14 lg:px-20 py-16 lg:py-24 space-y-8 max-w-2xl mx-auto lg:mx-0">
               
-              {/* Category Pill Tag */}
+              {/* Category Pill / Flagship Tag */}
               <div className="inline-block">
                 <span className="text-[11px] font-mono tracking-[0.3em] uppercase text-[#C59B27] border-b-2 border-[#C59B27] pb-1 font-bold">
                   {t.homeRaide.badge}
                 </span>
               </div>
 
-              {/* Serif Title - Luxurious & Noble */}
-              <h2 className="text-4xl sm:text-6xl font-serif tracking-tight text-white leading-[1.08] hover:text-amber-100 transition-colors">
+              {/* Serif Title - Dior/Gucci Pure Elegance */}
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight text-white leading-[1.08] font-normal">
                 {t.homeRaide.title}
               </h2>
 
-              {/* Editorial Subtitle */}
-              <p className="text-lg sm:text-xl text-zinc-300 font-light leading-relaxed tracking-wide">
+              {/* Spacious Editorial Subtitle */}
+              <p className="text-base sm:text-lg text-zinc-300 font-light leading-relaxed tracking-wide">
                 {t.homeRaide.subtitle}
               </p>
 
-              {/* Text Block with Hairline Left Accent Line */}
-              <div className="border-l-2 border-[#C59B27] pl-6 py-2 bg-white/5 rounded-r-md">
-                <p className="text-sm sm:text-base text-zinc-300 font-light leading-relaxed">
-                  {t.homeRaide.desc}
+              {/* Quote Block with Gold Hairline Left Accent Line */}
+              <div className="border-l-2 border-[#C59B27] pl-6 py-3 bg-zinc-900/40 rounded-none">
+                <p className="text-sm sm:text-base text-zinc-300 font-serif italic leading-relaxed">
+                  « {t.homeRaide.desc} »
                 </p>
               </div>
 
-              {/* Minimalist Grid Specification Details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-6 border-t border-zinc-800">
-                <div className="space-y-1 bg-zinc-900/60 p-4 border border-zinc-800 rounded">
-                  <span className="text-[10px] font-mono tracking-[0.25em] text-zinc-400 uppercase block font-bold">
+              {/* Minimalist Grid Specification Details with Enriched Complementary Palette */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                <div className="space-y-1.5 bg-[#0F1D38]/40 p-4.5 border border-[#1E3A8A]/60 rounded-none shadow-md">
+                  <span className="text-[10px] font-mono tracking-[0.25em] text-[#E5C158] uppercase block font-bold">
                     01 / CIBLE STRATÉGIQUE
                   </span>
-                  <span className="text-sm font-semibold text-white tracking-wide block">
+                  <span className="text-xs sm:text-sm font-semibold text-white tracking-wide block">
                     {t.homeRaide.target}
                   </span>
                 </div>
-                <div className="space-y-1 bg-zinc-900/60 p-4 border border-zinc-800 rounded">
-                  <span className="text-[10px] font-mono tracking-[0.25em] text-zinc-400 uppercase block font-bold">
+                <div className="space-y-1.5 bg-[#0D3B2E]/40 p-4.5 border border-[#0D3B2E]/70 rounded-none shadow-md">
+                  <span className="text-[10px] font-mono tracking-[0.25em] text-emerald-300 uppercase block font-bold">
                     02 / PARTENAIRE PILOTE
                   </span>
-                  <span className="text-sm font-semibold text-[#C59B27] tracking-wide block">
+                  <span className="text-xs sm:text-sm font-semibold text-[#E5C158] tracking-wide block">
                     {t.homeRaide.impact}
                   </span>
                 </div>
               </div>
 
               {/* Luxury Call-To-Action Button */}
-              <div className="pt-6">
+              <div className="pt-4">
                 <Link
                   href="/raide-race"
-                  className="inline-flex items-center gap-4 px-9 py-4 bg-[#C59B27] text-black font-mono text-xs font-bold uppercase tracking-[0.2em] hover:bg-white hover:text-black transition-all duration-500 border border-[#C59B27] group shadow-2xl rounded-sm hover:scale-[1.02]"
+                  className="inline-flex items-center gap-4 px-9 py-4 bg-[#C59B27] text-black font-mono text-xs font-bold uppercase tracking-[0.2em] hover:bg-[#800000] hover:text-[#E5C158] transition-all duration-500 border border-[#C59B27] group shadow-2xl rounded-none cursor-pointer"
                 >
                   <span>{t.homeRaide.cta}</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform duration-300" />
+                  <ArrowRight className="w-4 h-4 text-black group-hover:text-[#E5C158] group-hover:translate-x-2 transition-transform duration-300" />
                 </Link>
               </div>
 
             </div>
-
-          </div>
-
-          {/* Bottom Editorial Pagination / Index Bar */}
-          <div className="flex items-center justify-between border-t border-zinc-800 mt-20 pt-8">
-            <span className="text-xs font-mono text-zinc-400 tracking-[0.2em]">
-              KANEM-SA SPOTLIGHT — 2027
-            </span>
-            <div className="flex items-center gap-3">
-              <span className="w-8 h-[2px] bg-[#C59B27]" />
-              <span className="w-2 h-[2px] bg-zinc-700" />
-              <span className="w-2 h-[2px] bg-zinc-700" />
-            </div>
-            <span className="text-xs font-mono text-zinc-400 tracking-[0.2em]">
-              01 / 04
-            </span>
-          </div>
+          </Reveal>
 
         </div>
+
+        {/* Bottom Full-Width Index Bar */}
+        <div className="w-full px-8 lg:px-20 py-6 border-t border-zinc-900 flex items-center justify-between text-xs font-mono text-zinc-400 tracking-[0.2em]">
+          <span>KANEM-SA SPOTLIGHT — 2027</span>
+          <div className="flex items-center gap-3">
+            <span className="w-8 h-[2px] bg-[#C59B27]" />
+            <span className="w-2 h-[2px] bg-zinc-800" />
+            <span className="w-2 h-[2px] bg-zinc-800" />
+          </div>
+          <span>01 / 04</span>
+        </div>
+
       </section>
 
       {/* ---------------------------------------------------- */}
-      {/* 5. À PROPOS TEASER & HERITAGE STATEMENT */}
+      {/* 5. À PROPOS & STORY SHOWCASE (FULL-WIDTH WHITE STYLE) */}
       {/* ---------------------------------------------------- */}
-      <section className="py-20 bg-zinc-50 border-b border-zinc-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            
-            {/* Left Emblem Card */}
-            <div className="lg:col-span-5 order-2 lg:order-1">
-              <div className="bg-white p-8 rounded-xl border-2 border-black shadow-xl space-y-6 relative overflow-hidden">
-                <div className="w-24 h-24 bg-zinc-950 p-3 rounded-lg border border-[#C59B27] flex items-center justify-center mx-auto">
-                  <Image
-                    src="/images/emblem-V2.png"
-                    alt="Kanem Sao Emblem"
-                    width={80}
-                    height={80}
-                    className="object-contain"
-                  />
-                </div>
+      <section className="w-full py-24 sm:py-32 bg-white text-zinc-900 border-b border-zinc-200 overflow-hidden relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
+          
+          {/* Dynamic Content Grid */}
+          {heritageSlides.length > 0 && (() => {
+            const currentSlide = heritageSlides[activeHeritageSlide] || heritageSlides[0];
+
+            return (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
                 
-                <div className="text-center space-y-2">
-                  <h3 className="text-xl font-extrabold text-black">
-                    Savoir-Faire Kanem & Sao
-                  </h3>
-                  <p className="text-xs text-zinc-500 leading-relaxed">
-                    Symboles historiques de résilience, de gouvernance élevée et de maîtrise technique sur le continent africain.
-                  </p>
-                </div>
+                {/* Left Portrait Image Showcase */}
+                <Reveal key={`visual-${activeHeritageSlide}`} variant="left" delay={150} className="lg:col-span-6 w-full">
+                  <div
+                    style={{ position: "relative", width: "100%", height: "580px" }}
+                    className="overflow-hidden bg-zinc-950 border border-zinc-300 shadow-2xl group rounded-xs"
+                  >
+                    <Image
+                      src={currentSlide.image}
+                      alt={currentSlide.portraitAlt || currentSlide.title}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                      className="object-cover group-hover:scale-105 transition-transform duration-1000 filter contrast-[1.05] brightness-[0.95]"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent pointer-events-none" />
+                    
+                    {/* Floating Corner Badge in Imperial Navy + Champagne Gold */}
+                    <div className="absolute top-5 left-5 bg-[#0F1D38] backdrop-blur-md px-3.5 py-1.5 border border-[#1E3A8A] rounded-xs text-[10px] font-mono tracking-widest text-[#E5C158] uppercase font-bold shadow-lg">
+                      {currentSlide.badge}
+                    </div>
 
-                {/* Explicit Disclaimer Box */}
-                <div className="p-3.5 bg-amber-50 border border-amber-200 rounded text-[11px] font-semibold text-amber-950 text-center">
-                  {t.homeAboutTeaser.disclaimer}
-                </div>
+                    {/* Bottom Legend */}
+                    <div className="absolute bottom-5 left-5 right-5 text-white/90">
+                      <span className="text-[10px] font-mono text-[#E5C158] tracking-[0.2em] uppercase font-bold block">
+                        {currentSlide.portraitAlt || "PORTRAIT HISTORIQUE"}
+                      </span>
+                    </div>
+                  </div>
+                </Reveal>
+
+                {/* Right Typography & Quote Column */}
+                <Reveal key={`text-${activeHeritageSlide}`} variant="right" delay={250} className="lg:col-span-6 w-full">
+                  <div className="space-y-8 pl-0 lg:pl-4">
+                    
+                    {/* Big Bold Black Title */}
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-black tracking-tight leading-tight font-serif">
+                      {currentSlide.title}
+                    </h2>
+
+                    {/* Quote Section with Icon & Left Gold Border */}
+                    <div className="flex items-start gap-4 pt-2">
+                      <Quote className="w-10 h-10 text-[#C59B27] shrink-0 fill-[#C59B27]/10 rotate-180 mt-1" />
+                      
+                      <div className="border-l-2 border-[#C59B27] pl-5 space-y-4">
+                        <p className="text-sm sm:text-base text-zinc-800 italic font-serif leading-relaxed">
+                          « {currentSlide.desc} »
+                        </p>
+
+                        {/* Bullet points summary */}
+                        <div className="space-y-2 pt-1">
+                          {currentSlide.points.slice(0, 2).map((pt, i) => (
+                            <div key={i} className="flex items-center gap-2 text-xs text-zinc-700 font-semibold">
+                              <span className="w-2 h-2 rounded-full bg-[#C59B27]" />
+                              <span>{pt}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* High-Contrast Luxury Button CTA with Bordeaux Hover Accent */}
+                    <div className="pt-2">
+                      <Link
+                        href="/a-propos"
+                        className="inline-flex items-center gap-3 px-8 py-4 bg-black text-white hover:bg-[#800000] hover:text-[#E5C158] text-xs sm:text-sm font-bold tracking-wider transition-all duration-500 shadow-xl hover:shadow-2xl rounded-none group/btn cursor-pointer"
+                      >
+                        <span>{t.homeAboutTeaser.cta}</span>
+                        <ArrowRight className="w-4 h-4 text-[#C59B27] group-hover/btn:text-[#E5C158] group-hover/btn:translate-x-1.5 transition-all duration-300" />
+                      </Link>
+                    </div>
+
+                  </div>
+                </Reveal>
+
               </div>
+            );
+          })()}
+
+          {/* Bottom Center Pagination Controls: < o o o o > */}
+          <div className="mt-16 flex items-center justify-center gap-5">
+            <button
+              onClick={() => setActiveHeritageSlide((prev) => (prev === 0 ? heritageSlides.length - 1 : prev - 1))}
+              className="text-zinc-400 hover:text-black transition-colors p-2 cursor-pointer"
+              aria-label="Précédent"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3">
+              {heritageSlides.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveHeritageSlide(idx)}
+                  className={`rounded-full transition-all duration-300 cursor-pointer ${
+                    idx === activeHeritageSlide
+                      ? "w-3.5 h-3.5 bg-black ring-2 ring-[#C59B27]"
+                      : "w-2.5 h-2.5 bg-zinc-300 hover:bg-zinc-500"
+                  }`}
+                  aria-label={`Aller au slide ${idx + 1}`}
+                />
+              ))}
             </div>
 
-            {/* Right Teaser Content */}
-            <div className="lg:col-span-7 order-1 lg:order-2 space-y-6">
-              <span className="text-xs font-black uppercase tracking-widest text-[#C59B27]">
-                {t.homeAboutTeaser.badge}
-              </span>
-
-              <h2 className="text-3xl sm:text-4xl font-black text-black tracking-tight">
-                {t.homeAboutTeaser.title}
-              </h2>
-
-              <p className="text-sm text-zinc-700 leading-relaxed">
-                {t.homeAboutTeaser.desc}
-              </p>
-
-              <div className="space-y-3 pt-2">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#C59B27] shrink-0 mt-0.5" />
-                  <p className="text-xs font-bold text-zinc-800">
-                    Recherche scientifique appliquée orientée vers les défis majeurs.
-                  </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#C59B27] shrink-0 mt-0.5" />
-                  <p className="text-xs font-bold text-zinc-800">
-                    Développement de solutions numériques & matérielles souveraines.
-                  </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-[#C59B27] shrink-0 mt-0.5" />
-                  <p className="text-xs font-bold text-zinc-800">
-                    Synergie tripartite : Université - Entreprises - Administrations.
-                  </p>
-                </div>
-              </div>
-
-              <div className="pt-4">
-                <Link
-                  href="/a-propos"
-                  className="inline-flex items-center gap-2 px-6 py-3 text-xs font-bold text-white bg-black hover:bg-zinc-800 rounded-md transition-colors"
-                >
-                  <span>{t.homeAboutTeaser.cta}</span>
-                  <ChevronRight className="w-4 h-4 text-[#C59B27]" />
-                </Link>
-              </div>
-            </div>
-
+            <button
+              onClick={() => setActiveHeritageSlide((prev) => (prev + 1) % heritageSlides.length)}
+              className="text-zinc-400 hover:text-black transition-colors p-2 cursor-pointer"
+              aria-label="Suivant"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
+
         </div>
       </section>
 
       {/* ---------------------------------------------------- */}
       {/* 6. PARTENAIRES & SPONSORS MARQUEE */}
       {/* ---------------------------------------------------- */}
-      <section className="py-16 bg-white overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
-          <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400">
-            {t.partners.title}
-          </h3>
-        </div>
+      <section className="py-20 bg-white overflow-hidden">
+        <Reveal variant="up">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10 text-center">
+            <span className="text-xs font-black uppercase tracking-widest text-zinc-400 bg-zinc-100 px-4 py-1.5 rounded-full inline-block">
+              {t.partners.title}
+            </span>
+          </div>
+        </Reveal>
 
         {/* Marquee Banner */}
-        <div className="relative w-full overflow-hidden bg-zinc-50 py-8 border-y border-zinc-200">
-          <div className="flex gap-12 items-center justify-around max-w-6xl mx-auto opacity-70 grayscale hover:grayscale-0 transition-all">
-            <div className="flex items-center gap-3 font-extrabold text-sm text-zinc-800">
-              <Building2 className="w-6 h-6 text-[#C59B27]" />
-              <span>CENAME (Partenaire Pilote)</span>
-            </div>
-            <div className="flex items-center gap-3 font-extrabold text-sm text-zinc-800">
-              <BookOpen className="w-6 h-6 text-[#C59B27]" />
-              <span>Réseau Universités & Centres R&D</span>
-            </div>
-            <div className="flex items-center gap-3 font-extrabold text-sm text-zinc-800">
-              <Shield className="w-6 h-6 text-[#C59B27]" />
-              <span>Pôles de Souveraineté Technologique</span>
-            </div>
-            <div className="flex items-center gap-3 font-extrabold text-sm text-zinc-800">
-              <Award className="w-6 h-6 text-[#C59B27]" />
-              <span>Incubateurs & Pépites Tech</span>
+        <Reveal variant="scale" delay={100}>
+          <div className="relative w-full overflow-hidden bg-zinc-50 py-10 border-y border-zinc-200">
+            <div className="flex gap-12 items-center justify-around max-w-6xl mx-auto opacity-80 grayscale hover:grayscale-0 transition-all duration-500">
+              <div className="flex items-center gap-3 font-extrabold text-sm text-zinc-800 hover:scale-105 transition-transform cursor-pointer">
+                <Building2 className="w-6 h-6 text-[#C59B27]" />
+                <span>CENAME (Partenaire Pilote)</span>
+              </div>
+              <div className="flex items-center gap-3 font-extrabold text-sm text-zinc-800 hover:scale-105 transition-transform cursor-pointer">
+                <BookOpen className="w-6 h-6 text-[#C59B27]" />
+                <span>Réseau Universités &amp; Centres R&amp;D</span>
+              </div>
+              <div className="flex items-center gap-3 font-extrabold text-sm text-zinc-800 hover:scale-105 transition-transform cursor-pointer">
+                <Shield className="w-6 h-6 text-[#C59B27]" />
+                <span>Pôles de Souveraineté Technologique</span>
+              </div>
+              <div className="flex items-center gap-3 font-extrabold text-sm text-zinc-800 hover:scale-105 transition-transform cursor-pointer">
+                <Award className="w-6 h-6 text-[#C59B27]" />
+                <span>Incubateurs &amp; Pépites Tech</span>
+              </div>
             </div>
           </div>
-        </div>
+        </Reveal>
       </section>
     </div>
   );

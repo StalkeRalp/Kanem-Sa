@@ -20,7 +20,7 @@ export default function NewsPage() {
       date: "14 Août 2026",
       author: "Pôle R&D KANEM-SA",
       summary: "KANEM-SA inaugure un laboratoire dédié aux modèles de traitement automatique du langage naturel appliqués aux langues locales du bassin du lac Tchad.",
-      image: "/images/Images Attirance/pexels-mediahooch-14785826.jpg",
+      image: "/images/attirance/pexels-mediahooch-14785826.jpg",
       content: "Ce projet inédit vise à combler la fracture numérique en développant des algorithmes capables de comprendre, traduire et préserver le patrimoine linguistique africain. Les chercheurs de KANEM-SA travaillent en synergie avec des linguistes et ingénieurs réseau pour assurer une intégration dans les systèmes de santé et d'administration."
     },
     {
@@ -30,7 +30,7 @@ export default function NewsPage() {
       date: "02 Juillet 2026",
       author: "Comité d'Organisation",
       summary: "La Centrale Nationale d'Approvisionnement en Médicaments s'associe à KANEM-SA pour poser les jalons d'une AgriTech et HealthTech d'impact.",
-      image: "/images/Images Attirance/pexels-shvets-production-7562259.jpg",
+      image: "/images/attirance/pexels-shvets-production-7562259.jpg",
       content: "Dans le cadre de son plan de gouvernance et d'innovation, la CENAME parrainera les défis de traçabilité médicale et de numérisation de la chaîne du froid dans le cadre du concours étudiant RAIDE-RACE 2027."
     },
     {
@@ -40,7 +40,7 @@ export default function NewsPage() {
       date: "22 Mai 2026",
       author: "Secrétariat Général",
       summary: "Les chercheurs de KANEM-SA ont présenté trois communications majeures sur la résilience des infrastructures réseau critiques en Afrique Centrale.",
-      image: "/images/Images Attirance/pexels-davdkuko-17792243.jpg",
+      image: "/images/attirance/pexels-davdkuko-17792243.jpg",
       content: "Le symposium a réuni plus de 400 experts, universités et décideurs publics. KANEM-SA y a affirmé la nécessité d'une infrastructure cloud souveraine et d'une cryptographie nativement adaptée au continent."
     },
     {
@@ -50,7 +50,7 @@ export default function NewsPage() {
       date: "10 Avril 2026",
       author: "Direction Académique",
       summary: "Faciliter l'accès des étudiants et jeunes diplômés aux laboratoires d'expérimentation et d'incubation KANEM-SA.",
-      image: "/images/Images Attirance/pexels-zeal-creative-studios-58866141-33920046.jpg",
+      image: "/images/attirance/pexels-zeal-creative-studios-58866141-33920046.jpg",
       content: "Ces accords formalisent les passerelles universités-entreprises, permettant l'encadrement conjoint de thèses de doctorat et le prototypage rapide des solutions nées dans les campus."
     }
   ];

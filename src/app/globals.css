@@ -82,3 +82,65 @@ body {
   display: flex;
   will-change: transform;
 }
+
+/* Premium Card Micro-Interactions & Elevation */
+.premium-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease;
+  will-change: transform, box-shadow;
+}
+
+.premium-card:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 22px 40px -12px rgba(0, 0, 0, 0.12), 0 0 25px rgba(197, 155, 39, 0.15);
+}
+
+.premium-dark-card {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.3s ease;
+  will-change: transform, box-shadow;
+}
+
+.premium-dark-card:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.5), 0 0 25px rgba(197, 155, 39, 0.25);
+}
+
+/* Subtle Shimmer Effect on Buttons */
+.shimmer-btn {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer-btn::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    60deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.25) 50%,
+    transparent 70%
+  );
+  transform: translateX(-100%) rotate(25deg);
+  transition: transform 0.8s ease;
+}
+
+.shimmer-btn:hover::after {
+  transform: translateX(100%) rotate(25deg);
+}
+
+/* Smooth Horizontal Scrollbar hiding */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

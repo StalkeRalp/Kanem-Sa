@@ -3,6 +3,8 @@ import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import LoadingScreen from "@/components/LoadingScreen";
+import PageTransition from "@/components/PageTransition";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -28,9 +30,12 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full flex flex-col bg-white text-zinc-900 font-sans selection:bg-[#C59B27] selection:text-white">
         <LanguageProvider>
+          <LoadingScreen />
           <Header />
           <main className="flex-grow pt-20">
-            {children}
+            <PageTransition>
+              {children}
+            </PageTransition>
           </main>
           <Footer />
         </LanguageProvider>
