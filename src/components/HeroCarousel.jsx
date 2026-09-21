@@ -9,12 +9,23 @@ import { useLanguage } from "@/context/LanguageContext";
 
 const bgImages = [
   { src: "/images/kanem_hero_bg.png",                                                    caption: "Pôle R&D & Laboratoires d'Innovation" },
+  { src: "/images/1.jpeg",                                                              caption: "Campus & Ancrage Institutionnel" },
+  { src: "/images/42.jpeg",                      caption: "Technologies Émergentes & Souveraineté" },
+  { src: "/images/47.jpeg",                caption: "Recherche Scientifique Appliquée" },
+  { src: "/images/logo fond-noir2.jpeg",                caption: "Jeunesse & Programme RAIDE-RACE" },
+  { collage: true,                                                                        caption: "Galerie KANEM-SA — Tous nos domaines d'excellence" }
+];
+
+/*
+const bgImages = [
+  { src: "/images/kanem_hero_bg.png",                                                    caption: "Pôle R&D & Laboratoires d'Innovation" },
   { src: "/images/home.png",                                                              caption: "Campus & Ancrage Institutionnel" },
   { src: "/images/attirance/pexels-mediahooch-14785826.jpg",                      caption: "Technologies Émergentes & Souveraineté" },
   { src: "/images/attirance/pexels-shvets-production-7562020.jpg",                caption: "Recherche Scientifique Appliquée" },
   { src: "/images/attirance/pexels-shvets-production-7562259.jpg",                caption: "Jeunesse & Programme RAIDE-RACE" },
   { collage: true,                                                                        caption: "Galerie KANEM-SA — Tous nos domaines d'excellence" }
 ];
+*/
 
 const collageImages = [
   "/images/kanem_hero_bg.png",

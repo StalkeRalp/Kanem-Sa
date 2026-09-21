@@ -42,7 +42,7 @@ export default function LoadingScreen() {
         >
           {/* Left Curtain Panel — Slides Left on Exit */}
           <motion.div
-            className="absolute top-0 left-0 w-1/2 h-full bg-[#0A0A0A] border-r border-zinc-900/80 z-10 shadow-2xl"
+            className="absolute top-0 left-0 w-1/2 h-full bg-[#0A0A0A] z-10 shadow-2xl"
             initial={{ x: "0%" }}
             exit={{ x: "-100%" }}
             transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
@@ -50,7 +50,7 @@ export default function LoadingScreen() {
 
           {/* Right Curtain Panel — Slides Right on Exit */}
           <motion.div
-            className="absolute top-0 right-0 w-1/2 h-full bg-[#0A0A0A] border-l border-zinc-900/80 z-10 shadow-2xl"
+            className="absolute top-0 right-0 w-1/2 h-full bg-[#0A0A0A] z-10 shadow-2xl"
             initial={{ x: "0%" }}
             exit={{ x: "100%" }}
             transition={{ duration: 1.2, ease: [0.77, 0, 0.175, 1] }}
