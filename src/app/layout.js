@@ -20,6 +20,14 @@ export const metadata = {
   title: "KANEM-SA | Institution Africaine de Recherche & Innovation Technologique",
   description: "« Enracinés dans notre héritage, bâtis pour l'innovation. » Institution africaine de recherche appliquée, souveraineté technologique et développement numérique.",
   keywords: ["KANEM-SA", "Recherche", "Innovation", "Afrique", "Cameroun", "RAIDE-RACE", "Souveraineté numérique", "IA", "Cybersécurité"],
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png" },
+      { url: "/favicon.ico" }
+    ],
+    shortcut: "/icon.png",
+    apple: "/apple-icon.png",
+  },
 };
 
 export default function RootLayout({ children }) {
